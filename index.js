@@ -9,15 +9,11 @@ const http = require('http');
 const https = require('https')
 const url = require('url');
 const StringDecoder = require('string_decoder').StringDecoder;
-const config = require('./config');
+const config = require('./lib/config');
 const fs = require('fs');
-const _data = require('./lib/data');
+const handlers = require('./lib/handlers');
+const helpers = require ('./lib/helpers');
 
-// Testing 
-//@TODO delete this
-_data.delete('test','newFile',function(err){
-	console.log(err);
-})
 
 // Instantiating the HTTP server
 const httpServer = http.createServer(function(req,res){
@@ -83,7 +79,7 @@ let data = {
 	'queryStringObject': queryStringObject,
 	'method': method,
 	'headers': headers,
-	'payload': buffer
+	'payload': helpers.parseJsonToObject(buffer)
 
 	
 };
@@ -111,21 +107,9 @@ chosenHandler(data,function(statusCode,payload ){
 	 });
 
 }
-// Define the handlers
-let handlers = {};
 
-// Ping handler
-
-handlers.ping = function(data,callback){
-	callback(200);
-}
-
-// Not found handler
-handlers.notFound = function(data,callback){
-	callback(404);
-
-}
 // Define a request router
 const router = {
-	'ping' : handlers.ping
+	'ping' : handlers.ping,
+	'users': handlers.users
 }
